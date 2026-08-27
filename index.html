@@ -1,6 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VEYDCSKKTE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VEYDCSKKTE');
+</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Marketing, brand and ecommerce portfolio of Hannah Marie Boyle. Social, email and Shopify for a DTC label, a Sezane creator brief, and Casero, a self-initiated CPG concept brand. Relocating to New York City.">
@@ -1007,5 +1016,61 @@ button.chip{font:inherit;cursor:pointer;-webkit-appearance:none}
 })();
 </script>
 
+
+<script>
+/* --- portfolio events for GA4 --- */
+(function(){
+  function track(name, params){
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  }
+
+  // resume opened, and from where
+  var res = {openRes1:'hero', openRes2:'contact'};
+  Object.keys(res).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(){
+      track('resume_open', { source: res[id] });
+    });
+  });
+
+  // email campaign opened
+  var mail = document.getElementById('openMail');
+  if (mail) mail.addEventListener('click', function(){
+    track('email_campaign_open', { campaign: 'Three Altitudes' });
+  });
+
+  // clicks out to the work itself
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href^="http"]');
+    if (!a) return;
+    var host = '';
+    try { host = new URL(a.href).hostname.replace(/^www\./,''); } catch(err){ return; }
+    if (host === location.hostname.replace(/^www\./,'')) return;
+    track('work_link_click', {
+      destination: host,
+      link_url: a.href,
+      link_text: (a.textContent || '').trim().slice(0, 80)
+    });
+  }, true);
+
+  // how far down the page people actually get
+  var marks = [25, 50, 75], hit = {};
+  function depth(){
+    var doc = document.documentElement;
+    var scrollable = doc.scrollHeight - window.innerHeight;
+    if (scrollable <= 0) return;
+    var pct = (window.scrollY / scrollable) * 100;
+    marks.forEach(function(m){
+      if (!hit[m] && pct >= m){ hit[m] = 1; track('scroll_depth', { percent: m }); }
+    });
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function(){ depth(); ticking = false; });
+  }, { passive: true });
+})();
+</script>
 </body>
 </html>
